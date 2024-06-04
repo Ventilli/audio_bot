@@ -1,10 +1,8 @@
 from telebot.types import Message
 import speech_recognition as SR
-import telegramApi
+from serpapi import GoogleSearch
 import subprocess
-import requests
 import telebot
-import time
 import os
 
 
@@ -28,8 +26,6 @@ def audio(message_path):
     except SR.RequestError as e:
         return "Ошибка сервиса распознавания речи; {0}".format(e)
 
-
-
 @BOT.message_handler(commands=['start'])
 def welcome(message:Message):
     if message.chat.username != None:
@@ -49,29 +45,13 @@ def audio_formatting(message:Message):
     downloaded_file = BOT.download_file(path)
     with open(file_name, 'wb') as f:
         f.write(downloaded_file)
-
-    print(file_name)
-    time.sleep(1)
-    subprocess.run(['ffmpeg', '-i', file_name, file_name+'.wav', '-y'])
-    BOT.reply_to(message, format(audio(file_name+'.wav')))
-
-# r = SR.Recognizer()
-
-
-# mic = SR.Microphone()
-
-# with mic as source:
-#     print("Говорите...")
-#     audio = r.listen(source)
-
-
-# try:
-#     text = r.recognize_google(audio, language="ru")
-#     print("Вы сказали: " + text)
-# except SR.UnknownValueError:
-#     print("Извините, не удалось распознать речь.")
-# except SR.RequestError as e:
-#     print("Ошибка сервиса распознавания речи; {0}".format(e))
-
+    
+    result = file_name.split('.')[0]
+    process = subprocess.run(['ffmpeg', '-i', file_name, result+'.wav', '-y'])
+    process
+    print(result+'.wav')
+    BOT.reply_to(message, format(audio(result+'.wav')))
+    os.remove(result+'.wav')
+    os.remove(file_name)
 
 BOT.polling()
