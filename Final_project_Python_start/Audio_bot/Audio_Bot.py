@@ -10,7 +10,6 @@ TOKEN = '7161395864:AAHmQxVjFNwDsTRIxHIM8O0RugndRtcY3YA'
 BOT = telebot.TeleBot(token = TOKEN)
 
 userLanguage = 'ru_RU'
-IsLanguageLock = False
 
 
 
@@ -36,13 +35,6 @@ def welcome(message:Message):
     else:
         BOT.reply_to(message,
                      'Привет! Отправь мне аудио сообщение и я переформатирую его в текст!\nУчти, что я работаю только с русским языком (пока)!')
-
-    markup = InlineKeyboardMarkup(row_width=2)
-    ru = InlineKeyboardButton('Russian\nРусский', callback_data='ru')
-    en = InlineKeyboardButton('English\nАнглийский', callback_data = 'en')
-    markup.add(ru, en)
-    BOT.send_message(message.chat.id, 'Для начала выбери язык сообщения\nFirst, select the language of the message',
-                    reply_markup=markup)
 
     
 
@@ -82,16 +74,27 @@ def audio_formatting(message:Message):
 
 
 
+@BOT.message_handler(commands=['st'])
+def welcom(message:Message):
+    markup = InlineKeyboardMarkup(row_width=2)
+    ru = InlineKeyboardButton('Russian\nРусский', callback_data='ru')
+    en = InlineKeyboardButton('English\nАнглийский', callback_data = 'en')
+    markup.add(ru, en)
+    BOT.send_message(message.chat.id, 'Для начала выбери язык сообщения\nFirst, select the language of the message',
+                    reply_markup=markup)
+
+
+
 @BOT.callback_query_handler(func = lambda call : True)
 def callback(call : Message):
 
     if call is not None:
 
         if call.data == 'ru':
-            userLanguage = 'ru_RU'
+            # userLanguage = 'ru_RU'
             BOT.send_message(call.message.chat.id, 'Отлично, теперь ваш язык по умолчанию: русский\nGreat, now your default language is Russian')
         if call.data == 'en':
-            userLanguage = 'en_EN'
+            # userLanguage = 'en_EN'
             BOT.send_message(call.message.chat.id, 'Отлично, теперь ваш язык по умолчанию: английский\nGreat, now your default language is English')
 
 BOT.polling()
